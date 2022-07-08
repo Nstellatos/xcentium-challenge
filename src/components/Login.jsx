@@ -12,16 +12,20 @@ import {
 } from "@chakra-ui/react";
 import { nanoid } from "nanoid";
 import userUtils from "../utils/userUtils";
+import { useState } from "react";
 const Login = () => {
+  const [userFound, setUserFound] = useState();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const { username, password } = data;
-    userUtils.authorizeUser({ username, password });
+    reset();
+    setUserFound(await userUtils.loginUser({ username, password }));
   };
   /*
     Using the react-hook-form package here because it's faster and if I used the useState react hook along
@@ -37,6 +41,7 @@ const Login = () => {
       </FormErrorMessage>
     ));
   };
+
   return (
     <Center h="100vh">
       <Box w="sm">
@@ -71,6 +76,12 @@ const Login = () => {
                   marginTop: "1rem",
                 }}
               >
+                <Text
+                  color="red.500"
+                  hidden={userFound == undefined || null ? true : userFound}
+                >
+                  User Not Found
+                </Text>
                 {errors ? renderErrorMessages() : ""}
               </div>
             </Center>
