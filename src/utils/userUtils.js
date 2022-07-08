@@ -39,8 +39,7 @@ const loginUser = async ({ username, password }) => {
     */
     if (user.Username.toLowerCase() === username.toLowerCase()) {
       //if both of the conditions are true, break out of this loop by returning true(user found)
-      authorizeUser({ userRecord: user, password });
-      return true;
+      return authorizeUser({ userRecord: user, password });
     } else {
       //just keep going if this iteration is not a match
       continue;
@@ -66,9 +65,9 @@ const authorizeUser = ({ userRecord, password }) => {
       so... the method below is not secure and should really never be used in production c:
     */
     localStorage.setItem("user", userRecord.Username);
-  } else {
-    return false;
+    return true;
   }
+  return false;
 };
 
 const currentUser = () => {
