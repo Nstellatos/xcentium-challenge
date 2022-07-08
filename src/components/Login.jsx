@@ -11,14 +11,17 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { nanoid } from "nanoid";
+import userUtils from "../utils/userUtils";
 const Login = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   const onSubmit = (data) => {
-    console.log(data);
+    const { username, password } = data;
+    userUtils.authorizeUser({ username, password });
   };
   /*
     Using the react-hook-form package here because it's faster and if I used the useState react hook along
