@@ -1,5 +1,6 @@
 import loginData from "../logindata.csv";
 import Papa from "papaparse";
+
 const loginUser = async ({ username, password }) => {
   /*
     there's no backend server to run fs and have access to logindata.csv directly
@@ -38,15 +39,40 @@ const loginUser = async ({ username, password }) => {
     */
     if (user.Username.toLowerCase() === username.toLowerCase()) {
       //if both of the conditions are true, break out of this loop by returning true(user found)
+      authorizeUser({ userRecord: user, password });
       return true;
+    } else {
+      //just keep going if this iteration is not a match
+      continue;
     }
-    //if none of the conditions match for anything fallback to this returning false(no user found)
+  }
+  //if none of the conditions match for anything fallback to this returning false(no user found)
+  return false;
+};
+
+const authorizeUser = ({ userRecord, password }) => {
+  /*
+    Ideally we wouldn't be comparing plaintext variables here but instead on registration you'd store
+    the password hashed and salted (with BCrypt for instance) and then on login this authorize function
+    would encrypt the "password" variable input passed in above and compare it to the already exisiting 
+    hashed/salted string in the database. This way the server doesn't know the exact true password only
+    if the comparison is valid or not.
+  */
+  if (userRecord.Password === password) {
+    /* 
+      Doing this means the user can edit the information in local storage and technically sign into
+      any account they want/know the username to.
+      Preventing this would probably require a backend server handing out JWT tokens or something
+      so... the method below is not secure and should really never be used in production c:
+    */
+    localStorage.setItem("user", userRecord.Username);
+  } else {
     return false;
   }
 };
 
-const authorizeUser = ({ username, password }) => {
-  console.log(`login user ${username}, ${password}`);
+const currentUser = () => {
+  return localStorage.getItem("user");
 };
 
 const isLoggedIn = () => {
@@ -62,6 +88,7 @@ const userUtils = {
   logoutUser,
   authorizeUser,
   isLoggedIn,
+  currentUser,
 };
 
 export default userUtils;

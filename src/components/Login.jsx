@@ -1,5 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import {
   FormControl,
   FormLabel,
@@ -12,8 +13,14 @@ import {
 } from "@chakra-ui/react";
 import { nanoid } from "nanoid";
 import userUtils from "../utils/userUtils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 const Login = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (userUtils.isLoggedIn()) {
+      navigate("/");
+    }
+  }, []);
   const [userFound, setUserFound] = useState();
   const {
     register,
@@ -26,6 +33,9 @@ const Login = () => {
     const { username, password } = data;
     reset();
     setUserFound(await userUtils.loginUser({ username, password }));
+    if (userUtils.isLoggedIn()) {
+      navigate("/");
+    }
   };
   /*
     Using the react-hook-form package here because it's faster and if I used the useState react hook along
@@ -78,9 +88,9 @@ const Login = () => {
               >
                 <Text
                   color="red.500"
-                  hidden={userFound == undefined || null ? true : userFound}
+                  hidden={userFound === undefined || null ? true : userFound}
                 >
-                  User Not Found
+                  User Not Found or Password is incorrect
                 </Text>
                 {errors ? renderErrorMessages() : ""}
               </div>
